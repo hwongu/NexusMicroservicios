@@ -1,6 +1,6 @@
 # 🚀 Proyecto Nexus – Sistema de Gestión de Almacén (Arquitectura de Microservicios)
 
-Este repositorio contiene el código fuente, la configuración de la base de datos y la infraestructura para el sistema **Nexus** en su versión evolucionada hacia una **Arquitectura de Microservicios**. Este proyecto ha sido diseñado como material educativo y de ejemplo para clases universitarias, demostrando cómo migrar una aplicación monolítica hacia un ecosistema distribuido utilizando tecnologías modernas y estándares de la industria.
+Este repositorio contiene el código fuente, la configuración de la base de datos y la infraestructura para el sistema **Nexus** en su versión de una **Arquitectura de Microservicios**. Este proyecto ha sido diseñado como material educativo y de ejemplo para clases universitarias, demostrando cómo construir una aplicación completa (Full-Stack) utilizando tecnologías puras y estándares de la industria, sin depender inicialmente de frameworks pesados en el backend.
 
 El sistema implementa:
 * **Mantenimientos (CRUD) Desacoplados:** Gestión de Usuarios (Seguridad) y Catálogo (Productos y Categorías) en servicios independientes.
