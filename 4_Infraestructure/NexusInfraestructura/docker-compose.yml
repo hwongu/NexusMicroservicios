@@ -1,0 +1,148 @@
+# ==============================================================================
+# Archivo: docker-compose.yml
+# Autor: Henry Wong (hwongu@gmail.com)
+# Descripción: Orquestador completo del Ecosistema Nexus con credenciales dinámicas.
+# ==============================================================================
+
+services:
+  # ============================================================================
+  # CAPA DE BASES DE DATOS (EFÍMERAS)
+  # ============================================================================
+  
+  db-usuarios:
+    image: postgres:18
+    container_name: ms_db_usuarios
+    environment:
+      POSTGRES_USER: admin_nexus
+      POSTGRES_PASSWORD: admin_password_123
+      POSTGRES_DB: db_usuarios
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./database/init_usuarios.sql:/docker-entrypoint-initdb.d/init.sql
+
+  db-catalogo:
+    image: postgres:18
+    container_name: ms_db_catalogo
+    environment:
+      POSTGRES_USER: admin_nexus
+      POSTGRES_PASSWORD: admin_password_123
+      POSTGRES_DB: db_catalogo
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./database/init_catalogo.sql:/docker-entrypoint-initdb.d/init.sql
+
+  db-ingresos:
+    image: postgres:18
+    container_name: ms_db_ingresos
+    environment:
+      POSTGRES_USER: admin_nexus
+      POSTGRES_PASSWORD: admin_password_123
+      POSTGRES_DB: db_ingresos
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./database/init_ingresos.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # ============================================================================
+  # CAPA DE MICROSERVICIOS (BACKEND)
+  # ============================================================================
+
+  ms-seguridad-app:
+    image: eclipse-temurin:21-jre-alpine
+    container_name: ms-seguridad-app  # <-- Cambio: Guión medio
+    restart: always
+    ports:
+      - "9081:8081"
+    volumes:
+      - ./backend/deploy_seguridad:/app
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ms_db_usuarios:5432/db_usuarios
+      # Inyección dinámica de credenciales configuradas en el properties
+      - DB_SEGURIDAD_USERNAME=admin_nexus
+      - DB_SEGURIDAD_PASSWORD=admin_password_123
+    command: sh -c "java -jar /app/*.jar"
+    depends_on:
+      - db-usuarios
+
+  ms-catalogo-app:
+    image: eclipse-temurin:21-jre-alpine
+    container_name: ms-catalogo-app
+    restart: always
+    ports:
+      - "9082:8082"
+    volumes:
+      - ./backend/deploy_catalogo:/app
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ms_db_catalogo:5432/db_catalogo
+      # Inyección dinámica de credenciales configuradas en el properties
+      - DB_CATALOGO_USERNAME=admin_nexus
+      - DB_CATALOGO_PASSWORD=admin_password_123
+    command: sh -c "java -jar /app/*.jar"
+    depends_on:
+      - db-catalogo
+
+  ms-ingresos-app:
+    image: eclipse-temurin:21-jre-alpine
+    container_name: ms-ingresos-app
+    restart: always
+    ports:
+      - "9083:8083"
+    volumes:
+      - ./backend/deploy_ingresos:/app
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ms_db_ingresos:5432/db_ingresos
+      # Inyección dinámica de credenciales configuradas en el properties
+      - DB_INGRESOS_USERNAME=admin_nexus
+      - DB_INGRESOS_PASSWORD=admin_password_123
+      # Comunicación entre microservicios (Rutas HTTP limpias)
+      - APP_SEGURIDAD_BASE_URL=http://ms-seguridad-app:8081/NexusMS
+      - APP_CATALOGO_BASE_URL=http://ms-catalogo-app:8082/NexusMS
+    command: sh -c "java -jar /app/*.jar"
+    depends_on:
+      - db-ingresos
+      - ms-seguridad-app
+      - ms-catalogo-app
+
+  # ============================================================================
+  # API GATEWAY (PUNTO DE ENTRADA ÚNICO)
+  # ============================================================================
+  
+  ms-gateway-app:
+    image: eclipse-temurin:21-jre-alpine
+    container_name: ms-gateway-app
+    restart: always
+    ports:
+      - "9080:8080"
+    volumes:
+      - ./backend/deploy_gateway:/app
+    environment:
+      - URI_SEGURIDAD=http://ms-seguridad-app:8081
+      - URI_CATALOGO=http://ms-catalogo-app:8082
+      - URI_INGRESOS=http://ms-ingresos-app:8083
+    command: sh -c "java -jar /app/*.jar"
+    depends_on:
+      - ms-seguridad-app
+      - ms-catalogo-app
+      - ms-ingresos-app
+  
+  # ============================================================================
+  # FRONTEND (ANGULAR VIA NGINX)
+  # ============================================================================
+  
+  frontend-nexus-app:
+    image: nginx:latest
+    container_name: frontend-nexus-app
+    restart: always
+    ports:
+      # Expone la página web en el puerto 80 (HTTP estándar) de tu PC
+      - "80:80"
+    volumes:
+      # Monta la carpeta dist de Angular compilada
+      - ./frontend:/usr/share/nginx/html/NexusFrontEnd
+      # Archivo de configuración de enrutamiento para Nginx
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      # El frontend espera a que el Gateway esté listo
+      - ms-gateway-app
