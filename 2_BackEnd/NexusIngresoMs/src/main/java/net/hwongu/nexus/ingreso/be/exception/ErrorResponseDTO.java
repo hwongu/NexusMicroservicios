@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * DTO estandarizado para representar errores devueltos por la API REST.
+ * Transporta datos de errores de la API.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Data
 @NoArgsConstructor

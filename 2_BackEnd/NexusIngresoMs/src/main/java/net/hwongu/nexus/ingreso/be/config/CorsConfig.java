@@ -5,22 +5,15 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Configuracion global y didactica de CORS para el microservicio.
- *
- * <p>En este entorno academico se permite cualquier origen para facilitar las
- * pruebas desde Angular, Postman u otros clientes sin agregar complejidad de
- * seguridad adicional.</p>
+ * Centraliza la configuracion CORS del microservicio.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    /**
-     * Registra reglas CORS globales para todas las rutas del microservicio.
-     *
-     * @param registry registro de configuraciones CORS provisto por Spring MVC.
-     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

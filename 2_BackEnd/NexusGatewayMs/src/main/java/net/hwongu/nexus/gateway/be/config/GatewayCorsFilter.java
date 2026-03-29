@@ -12,13 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Filtro CORS didactico para el gateway.
- *
- * <p>El gateway responde directamente al preflight OPTIONS y garantiza que las
- * cabeceras CORS se escriban una sola vez incluso si el reenvio al
- * microservicio termina con error.</p>
+ * Gestiona solicitudes CORS del gateway.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

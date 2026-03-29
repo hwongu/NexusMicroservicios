@@ -1,10 +1,11 @@
 package net.hwongu.nexus.ingreso.be.exception;
 
 /**
- * Excepcion de negocio para representar errores causados por datos de entrada
- * invalidos enviados por el cliente.
+ * Representa errores de solicitud invalida.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 public class BadRequestException extends RuntimeException {
 
