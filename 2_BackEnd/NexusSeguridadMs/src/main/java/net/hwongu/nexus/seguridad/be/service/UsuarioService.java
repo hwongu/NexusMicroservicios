@@ -14,14 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * Capa de servicio para operaciones de usuarios.
- *
- * <p>La anotacion {@link Service} marca esta clase como un componente de la
- * capa de negocio. Aqui se centralizan las validaciones simples, las
- * conversiones entre DTO y entidad, y la coordinacion de operaciones
- * transaccionales.</p>
+ * Coordina la logica de negocio de usuarios.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Service
 @RequiredArgsConstructor
@@ -29,11 +26,6 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-    /**
-     * Lista todos los usuarios en el orden del sistema anterior.
-     *
-     * @return usuarios convertidos a DTO.
-     */
     @Transactional(readOnly = true)
     public List<UsuarioDTO> listarUsuarios() {
         return usuarioRepository.findAllByOrderByIdUsuarioAsc()
@@ -42,12 +34,6 @@ public class UsuarioService {
                 .toList();
     }
 
-    /**
-     * Busca un usuario por ID.
-     *
-     * @param id identificador a buscar.
-     * @return DTO del usuario encontrado.
-     */
     @Transactional(readOnly = true)
     public UsuarioDTO buscarUsuarioPorId(Integer id) {
         Usuario usuario = usuarioRepository.findById(id)
@@ -55,12 +41,6 @@ public class UsuarioService {
         return convertirADTO(usuario);
     }
 
-    /**
-     * Registra un nuevo usuario.
-     *
-     * @param usuarioDTO datos recibidos desde la API.
-     * @return usuario creado con su ID generado.
-     */
     @Transactional
     public UsuarioDTO registrarUsuario(UsuarioDTO usuarioDTO) {
         Usuario usuario = convertirAEntidad(usuarioDTO);
@@ -70,15 +50,6 @@ public class UsuarioService {
         return convertirADTO(usuarioGuardado);
     }
 
-    /**
-     * Actualiza un usuario existente.
-     *
-     * <p>Antes de guardar, se verifica que el registro exista para no responder
-     * exitosamente sobre un recurso inexistente.</p>
-     *
-     * @param id identificador del usuario a modificar.
-     * @param usuarioDTO nuevos datos del usuario.
-     */
     @Transactional
     public void actualizarUsuario(Integer id, UsuarioDTO usuarioDTO) {
         Usuario usuarioExistente = usuarioRepository.findById(id)
@@ -91,12 +62,6 @@ public class UsuarioService {
         usuarioRepository.save(usuarioExistente);
     }
 
-    /**
-     * Elimina un usuario si existe y si no tiene dependencias que violen la
-     * integridad referencial.
-     *
-     * @param id identificador del usuario.
-     */
     @Transactional
     public void eliminarUsuario(Integer id) {
         if (!usuarioRepository.existsById(id)) {
@@ -114,12 +79,6 @@ public class UsuarioService {
         }
     }
 
-    /**
-     * Autentica un usuario activo por sus credenciales.
-     *
-     * @param loginRequestDTO credenciales enviadas por el cliente.
-     * @return usuario autenticado sin exponer su contrasena.
-     */
     @Transactional(readOnly = true)
     public UsuarioDTO autenticarUsuario(LoginRequestDTO loginRequestDTO) {
         Usuario usuario = usuarioRepository.findByUsernameAndPasswordAndEstadoTrue(
@@ -131,12 +90,6 @@ public class UsuarioService {
         return convertirADTO(usuario);
     }
 
-    /**
-     * Convierte una entidad a DTO.
-     *
-     * @param usuario entidad JPA.
-     * @return DTO listo para respuesta.
-     */
     private UsuarioDTO convertirADTO(Usuario usuario) {
         return UsuarioDTO.builder()
                 .idUsuario(usuario.getIdUsuario())
@@ -145,12 +98,6 @@ public class UsuarioService {
                 .build();
     }
 
-    /**
-     * Convierte un DTO a entidad.
-     *
-     * @param usuarioDTO datos recibidos desde cliente o capas superiores.
-     * @return entidad lista para persistir.
-     */
     private Usuario convertirAEntidad(UsuarioDTO usuarioDTO) {
         return Usuario.builder()
                 .idUsuario(usuarioDTO.getIdUsuario())

@@ -36,6 +36,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Verifica el controlador de ingresos.
+ *
+ * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
+ */
 @ExtendWith(MockitoExtension.class)
 class IngresoControllerTest {
 

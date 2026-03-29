@@ -1,10 +1,11 @@
 package net.hwongu.nexus.ingreso.be.exception;
 
 /**
- * Excepcion de negocio para representar fallos al comunicarse con otros
- * microservicios luego de haber registrado datos locales.
+ * Representa errores de integracion remota.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 public class IntegracionRemotaException extends RuntimeException {
 

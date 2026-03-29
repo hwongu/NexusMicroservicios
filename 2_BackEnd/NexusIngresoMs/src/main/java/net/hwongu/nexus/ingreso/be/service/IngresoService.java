@@ -25,14 +25,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Capa de servicio para operaciones de ingresos.
- *
- * <p>Ademas de coordinar la persistencia local, esta capa valida usuarios y
- * productos mediante llamadas HTTP simples hacia los otros microservicios.
- * Esto permite explicar de forma didactica la diferencia entre persistencia
- * propia e integracion remota.</p>
+ * Coordina la logica de negocio de ingresos.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Service
 @RequiredArgsConstructor
@@ -59,11 +56,6 @@ public class IngresoService {
     @Value("${app.catalogo.base-url}")
     private String catalogoBaseUrl;
 
-    /**
-     * Lista todos los ingresos registrados.
-     *
-     * @return ingresos convertidos a DTO.
-     */
     @Transactional(readOnly = true)
     public List<IngresoDTO> listarIngresos() {
         return ingresoRepository.findAllByOrderByIdIngresoDesc()
@@ -72,12 +64,6 @@ public class IngresoService {
                 .toList();
     }
 
-    /**
-     * Obtiene todos los detalles de un ingreso especifico.
-     *
-     * @param idIngreso identificador del ingreso.
-     * @return detalles enriquecidos con nombre de producto si catalogo responde.
-     */
     @Transactional(readOnly = true)
     public List<DetalleIngresoDTO> buscarDetallesPorIngreso(Integer idIngreso) {
         if (!ingresoRepository.existsById(idIngreso)) {
@@ -90,18 +76,6 @@ public class IngresoService {
                 .toList();
     }
 
-    /**
-     * Registra un ingreso completo: valida usuario y productos, persiste datos
-     * locales y luego solicita la actualizacion de stock al microservicio de
-     * catalogo.
-     *
-     * <p>Si el ajuste remoto de stock falla, no se intenta una transaccion
-     * distribuida. En su lugar, el ingreso queda marcado como
-     * {@code ERROR_INTEGRACION} para dejar el problema visible y recuperable.</p>
-     *
-     * @param requestDTO datos de cabecera y detalle.
-     * @return ingreso creado si toda la integracion se completa.
-     */
     @Transactional(noRollbackFor = IntegracionRemotaException.class)
     public IngresoDTO registrarIngresoCompleto(RegistrarIngresoRequestDTO requestDTO) {
         IngresoDTO ingresoDTO = requestDTO.getIngreso();
@@ -140,12 +114,6 @@ public class IngresoService {
         return construirIngresoDTO(ingresoGuardado, usuario != null ? usuario.getUsername() : null);
     }
 
-    /**
-     * Anula un ingreso y solicita a catalogo revertir el stock previamente
-     * incrementado.
-     *
-     * @param idIngreso identificador del ingreso.
-     */
     @Transactional(noRollbackFor = IntegracionRemotaException.class)
     public void anularIngreso(Integer idIngreso) {
         Ingreso ingreso = ingresoRepository.findById(idIngreso)
@@ -174,12 +142,6 @@ public class IngresoService {
         }
     }
 
-    /**
-     * Actualiza manualmente el estado de un ingreso.
-     *
-     * @param idIngreso identificador del ingreso.
-     * @param nuevoEstado nuevo estado solicitado.
-     */
     @Transactional
     public void actualizarEstadoIngreso(Integer idIngreso, String nuevoEstado) {
         Ingreso ingreso = ingresoRepository.findById(idIngreso)
@@ -189,25 +151,11 @@ public class IngresoService {
         ingresoRepository.save(ingreso);
     }
 
-    /**
-     * Convierte una entidad local a DTO enriquecido con datos del usuario
-     * obtenidos por HTTP si el microservicio de seguridad esta disponible.
-     *
-     * @param ingreso entidad local persistida.
-     * @return DTO para respuesta.
-     */
     private IngresoDTO convertirIngresoADTO(Ingreso ingreso) {
         UsuarioRemotoDTO usuario = buscarUsuarioOpcional(ingreso.getIdUsuario());
         return construirIngresoDTO(ingreso, usuario.getUsername());
     }
 
-    /**
-     * Convierte una entidad local de detalle a DTO enriquecido con el nombre
-     * del producto si catalogo esta disponible.
-     *
-     * @param detalle detalle persistido localmente.
-     * @return DTO para respuesta.
-     */
     private DetalleIngresoDTO convertirDetalleADTO(DetalleIngreso detalle) {
         ProductoRemotoDTO producto = buscarProductoOpcional(detalle.getIdProducto());
 
@@ -221,13 +169,6 @@ public class IngresoService {
                 .build();
     }
 
-    /**
-     * Construye un DTO de ingreso usando un nombre de usuario ya resuelto.
-     *
-     * @param ingreso entidad local.
-     * @param username nombre de usuario si se pudo recuperar.
-     * @return DTO final.
-     */
     private IngresoDTO construirIngresoDTO(Ingreso ingreso, String username) {
         return IngresoDTO.builder()
                 .idIngreso(ingreso.getIdIngreso())
@@ -238,13 +179,6 @@ public class IngresoService {
                 .build();
     }
 
-    /**
-     * Convierte un detalle DTO a entidad local.
-     *
-     * @param detalleDTO datos recibidos desde la API.
-     * @param ingreso ingreso padre ya persistido.
-     * @return detalle listo para persistir.
-     */
     private DetalleIngreso convertirDetalleAEntidad(DetalleIngresoDTO detalleDTO, Ingreso ingreso) {
         return DetalleIngreso.builder()
                 .ingreso(ingreso)
@@ -254,12 +188,6 @@ public class IngresoService {
                 .build();
     }
 
-    /**
-     * Valida que el usuario exista y este activo consultando seguridad.
-     *
-     * @param idUsuario identificador a validar.
-     * @return usuario remoto validado.
-     */
     private UsuarioRemotoDTO validarUsuarioActivo(Integer idUsuario) {
         UsuarioRemotoDTO usuario;
 
@@ -285,12 +213,6 @@ public class IngresoService {
         return usuario;
     }
 
-    /**
-     * Valida que el producto exista consultando catalogo.
-     *
-     * @param idProducto identificador del producto.
-     * @return producto remoto validado.
-     */
     private ProductoRemotoDTO validarProductoExistente(Integer idProducto) {
         ProductoRemotoDTO producto;
 
@@ -316,12 +238,6 @@ public class IngresoService {
         return producto;
     }
 
-    /**
-     * Busca un usuario remoto requerido para construir la respuesta.
-     *
-     * @param idUsuario identificador del usuario.
-     * @return usuario remoto recuperado desde seguridad.
-     */
     private UsuarioRemotoDTO buscarUsuarioOpcional(Integer idUsuario) {
         UsuarioRemotoDTO usuario;
 
@@ -342,12 +258,6 @@ public class IngresoService {
         return usuario;
     }
 
-    /**
-     * Busca un producto remoto requerido para construir la respuesta.
-     *
-     * @param idProducto identificador del producto.
-     * @return producto remoto recuperado desde catalogo.
-     */
     private ProductoRemotoDTO buscarProductoOpcional(Integer idProducto) {
         ProductoRemotoDTO producto;
 
@@ -368,12 +278,6 @@ public class IngresoService {
         return producto;
     }
 
-    /**
-     * Solicita a catalogo ajustar stock por cada detalle persistido localmente.
-     *
-     * @param detalles detalles del ingreso.
-     * @param operacion tipo de ajuste solicitado.
-     */
     private void actualizarStockRemoto(List<DetalleIngreso> detalles, String operacion) {
         RestClient catalogoClient = obtenerClienteCatalogo();
 
@@ -391,20 +295,10 @@ public class IngresoService {
         }
     }
 
-    /**
-     * Construye un cliente HTTP simple hacia seguridad.
-     *
-     * @return cliente configurado con URL base.
-     */
     private RestClient obtenerClienteSeguridad() {
         return restClientBuilder.baseUrl(seguridadBaseUrl).build();
     }
 
-    /**
-     * Construye un cliente HTTP simple hacia catalogo.
-     *
-     * @return cliente configurado con URL base.
-     */
     private RestClient obtenerClienteCatalogo() {
         return restClientBuilder.baseUrl(catalogoBaseUrl).build();
     }

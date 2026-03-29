@@ -1,13 +1,11 @@
 package net.hwongu.nexus.seguridad.be.exception;
 
 /**
- * Excepcion de negocio para representar intentos de autenticacion fallidos.
- *
- * <p>Su objetivo es mantener el mismo manejo centralizado de errores de la
- * API, pero devolviendo semantica HTTP 401 cuando las credenciales no son
- * validas.</p>
+ * Representa errores de acceso no autorizado.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 public class NoAutorizadoException extends RuntimeException {
 

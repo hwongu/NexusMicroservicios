@@ -12,14 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * Capa de servicio para la gestion de categorias.
- *
- * <p>La anotacion {@link Service} marca esta clase como un componente de la
- * capa de negocio. Aqui se centralizan las validaciones simples, las
- * conversiones entre DTO y entidad, y la coordinacion de operaciones
- * transaccionales.</p>
+ * Coordina la logica de negocio de categorias.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Service
 @RequiredArgsConstructor
@@ -27,11 +24,6 @@ public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
 
-    /**
-     * Lista todas las categorias en el orden del monolito original.
-     *
-     * @return categorias convertidas a DTO.
-     */
     @Transactional(readOnly = true)
     public List<CategoriaDTO> listarCategorias() {
         return categoriaRepository.findAllByOrderByIdCategoriaAsc()
@@ -40,12 +32,6 @@ public class CategoriaService {
                 .toList();
     }
 
-    /**
-     * Busca una categoria por ID.
-     *
-     * @param id identificador a buscar.
-     * @return DTO de la categoria encontrada.
-     */
     @Transactional(readOnly = true)
     public CategoriaDTO buscarCategoriaPorId(Integer id) {
         Categoria categoria = categoriaRepository.findById(id)
@@ -53,12 +39,6 @@ public class CategoriaService {
         return convertirADTO(categoria);
     }
 
-    /**
-     * Registra una nueva categoria.
-     *
-     * @param categoriaDTO datos recibidos desde la API.
-     * @return categoria creada con su ID generado.
-     */
     @Transactional
     public CategoriaDTO registrarCategoria(CategoriaDTO categoriaDTO) {
         Categoria categoria = convertirAEntidad(categoriaDTO);
@@ -67,15 +47,6 @@ public class CategoriaService {
         return convertirADTO(categoriaGuardada);
     }
 
-    /**
-     * Actualiza una categoria existente.
-     *
-     * <p>Antes de guardar, se verifica que el registro exista para no responder
-     * exitosamente sobre un recurso inexistente.</p>
-     *
-     * @param id identificador de la categoria a modificar.
-     * @param categoriaDTO nuevos datos de la categoria.
-     */
     @Transactional
     public void actualizarCategoria(Integer id, CategoriaDTO categoriaDTO) {
         Categoria categoriaExistente = categoriaRepository.findById(id)
@@ -87,12 +58,6 @@ public class CategoriaService {
         categoriaRepository.save(categoriaExistente);
     }
 
-    /**
-     * Elimina una categoria si existe y si no tiene dependencias que violen la
-     * integridad referencial.
-     *
-     * @param id identificador de la categoria.
-     */
     @Transactional
     public void eliminarCategoria(Integer id) {
         if (!categoriaRepository.existsById(id)) {
@@ -110,12 +75,6 @@ public class CategoriaService {
         }
     }
 
-    /**
-     * Convierte una entidad a DTO.
-     *
-     * @param categoria entidad JPA.
-     * @return DTO listo para respuesta.
-     */
     private CategoriaDTO convertirADTO(Categoria categoria) {
         return CategoriaDTO.builder()
                 .idCategoria(categoria.getIdCategoria())
@@ -124,12 +83,6 @@ public class CategoriaService {
                 .build();
     }
 
-    /**
-     * Convierte un DTO a entidad.
-     *
-     * @param categoriaDTO datos recibidos desde cliente o capas superiores.
-     * @return entidad lista para persistir.
-     */
     private Categoria convertirAEntidad(CategoriaDTO categoriaDTO) {
         return Categoria.builder()
                 .idCategoria(categoriaDTO.getIdCategoria())

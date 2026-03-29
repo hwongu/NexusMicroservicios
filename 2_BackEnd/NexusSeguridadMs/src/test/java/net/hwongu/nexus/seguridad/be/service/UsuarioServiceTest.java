@@ -27,6 +27,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Verifica el servicio de usuarios.
+ *
+ * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
+ */
 @ExtendWith(MockitoExtension.class)
 class UsuarioServiceTest {
 
