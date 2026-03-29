@@ -11,7 +11,7 @@ El sistema implementa:
 
 ## 📁 Estructura del Repositorio
 
-El proyecto está dividido en cuatro grandes módulos principales:
+El proyecto está dividido en cinco grandes módulos principales:
 
 ### 🗄️ 1_DataBase (Persistencia Efímera)
 Contiene la infraestructura de datos dockerizada para el ambiente de desarrollo.
@@ -32,6 +32,10 @@ Contiene la aplicación cliente con la que interactúan los usuarios finales.
 Contiene los directorios de destino donde se unifican todos los artefactos para levantar la infraestructura completa (Bases de Datos, Backend y Frontend) mediante Docker Compose.
 * **NexusInfraestructura\backend:** Contiene subcarpetas específicas (`deploy_catalogo`, `deploy_seguridad`, `deploy_ingresos`, `deploy_gateway`) para alojar los `.jar` de cada servicio.
 * **NexusInfraestructura\frontend:** Carpeta de destino para los archivos estáticos compilados del frontend en Angular.
+
+### 🧪 5_Test (Pruebas de API)
+Contiene las colecciones y entornos preconfigurados para validar los endpoints del ecosistema de manera independiente.
+* **Postman:** Directorio que aloja los archivos JSON exportados listos para ser importados en tu cliente HTTP.
 
 ---
 
@@ -84,10 +88,29 @@ Preparamos la interfaz de usuario para producción.
 
 ---
 
+## 🧪 Pruebas del API con Postman
+
+Para facilitar la validación del ecosistema backend de forma aislada, se han incluido scripts de prueba parametrizados. La colección está dividida en dos partes: acceso directo a los microservicios y acceso unificado a través del API Gateway.
+
+1. Navega a la ruta: `5_Test\Postman`.
+2. Abre tu herramienta **Postman** (o Insomnia).
+3. Utiliza la opción **Import** y selecciona los dos archivos incluidos:
+   * `NexusMicroservicios.postman_collection.json` (Contiene las colecciones de peticiones).
+   * `NexusMicroservicios_Enviroment.postman_environment.json` (Contiene las variables dinámicas).
+4. **¡Muy importante!** En la esquina superior derecha de Postman, asegúrate de seleccionar el entorno `NexusMicroservicios_Enviroment`.
+5. Ve a la vista de configuración del entorno (el ícono del "ojito" o "Environment quick look") e ingresa los valores base en la columna **Current Value** según los puertos que estés utilizando (ya sea desde tu IDE o en Docker). Deberás llenar:
+   * `baseUrlCatalogo`
+   * `baseUrlSeguridad`
+   * `baseUrlIngresoMs`
+   * `baseUrlGateway`
+6. Guarda los cambios del entorno. Ahora todas las peticiones se enrutarán dinámicamente.
+
+---
+
 ## 🛠️ Stack Tecnológico
 
 * **Backend:** Java 21, Spring Boot 4.0.5, Spring Cloud Gateway, Spring Data JPA, Lombok
-* **Testing:** JUnit 5, Mockito
+* **Testing:** JUnit 5, Mockito, Postman (API Testing)
 * **Gestor de Dependencias:** Maven
 * **Frontend:** Angular 19
 * **Base de Datos:** PostgreSQL 18 (Patrón Database per Service)
@@ -119,3 +142,4 @@ Este repositorio es un recurso de ejemplo para prácticas en clase. No está opt
 ![Angular](https://img.shields.io/badge/Angular-19-DD0031?style=for-the-badge&logo=angular)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?style=for-the-badge&logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-blue?style=for-the-badge&logo=docker)
+![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)

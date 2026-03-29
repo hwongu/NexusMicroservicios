@@ -7,18 +7,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Repositorio Spring Data para {@link DetalleIngreso}.
+ * Accede a datos de detalles de ingreso.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Repository
 public interface DetalleIngresoRepository extends JpaRepository<DetalleIngreso, Integer> {
 
-    /**
-     * Recupera todos los detalles de un ingreso especifico.
-     *
-     * @param idIngreso identificador del ingreso padre.
-     * @return detalles asociados en orden ascendente.
-     */
     List<DetalleIngreso> findAllByIngresoIdIngresoOrderByIdDetalleAsc(Integer idIngreso);
 }

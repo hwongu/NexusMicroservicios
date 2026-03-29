@@ -40,6 +40,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Verifica el servicio de ingresos.
+ *
+ * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
+ */
 @ExtendWith(MockitoExtension.class)
 class IngresoServiceTest {
 

@@ -7,9 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO simple para actualizar el estado de un ingreso.
+ * Transporta datos para actualizar estados de ingresos.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Data
 @NoArgsConstructor
@@ -17,9 +19,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ActualizarEstadoIngresoDTO {
 
-    /**
-     * Nuevo estado solicitado para el ingreso.
-     */
     @NotBlank(message = "El estado es obligatorio.")
     private String estado;
 }

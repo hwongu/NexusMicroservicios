@@ -9,32 +9,18 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repositorio Spring Data para {@link Producto}.
- *
- * <p>Se utiliza {@link EntityGraph} para indicar a JPA que traiga la
- * categoria asociada junto con cada producto cuando realmente la API la
- * necesita. Esto evita problemas de carga perezosa fuera de la transaccion y
- * reduce consultas adicionales innecesarias.</p>
+ * Accede a datos de productos.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 
-    /**
-     * Obtiene todos los productos junto con su categoria, ordenados por ID.
-     *
-     * @return lista completa del catalogo de productos.
-     */
     @EntityGraph(attributePaths = "categoria")
     List<Producto> findAllByOrderByIdProductoAsc();
 
-    /**
-     * Busca un producto por su identificador cargando tambien la categoria.
-     *
-     * @param id identificador del producto.
-     * @return producto encontrado, si existe.
-     */
     @Override
     @EntityGraph(attributePaths = "categoria")
     Optional<Producto> findById(Integer id);

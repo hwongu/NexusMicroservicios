@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * DTO que agrupa la cabecera y el detalle necesarios para registrar un ingreso
- * completo en una sola solicitud HTTP.
+ * Transporta datos para registrar ingresos.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Data
 @NoArgsConstructor
@@ -22,16 +23,10 @@ import java.util.List;
 @Builder
 public class RegistrarIngresoRequestDTO {
 
-    /**
-     * Datos de la cabecera del ingreso.
-     */
     @Valid
     @NotNull(message = "La cabecera del ingreso es obligatoria.")
     private IngresoDTO ingreso;
 
-    /**
-     * Lineas de detalle del ingreso.
-     */
     @Valid
     @NotEmpty(message = "El ingreso debe tener al menos un detalle.")
     private List<DetalleIngresoDTO> detalles;

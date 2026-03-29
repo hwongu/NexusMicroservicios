@@ -6,9 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO de apoyo para leer la respuesta de NexusSeguridadMs.
+ * Transporta datos remotos de usuarios.
  *
  * @author Henry Wong
+ * GitHub @hwongu
+ * https://github.com/hwongu
  */
 @Data
 @NoArgsConstructor
